@@ -1,0 +1,9 @@
+.top-buffer { margin-top:20px; }
+.pdf-btn {
+}
+
+.vcenter {
+	display: inline-block;
+	vertical-align: middle;
+	float: none;
+}

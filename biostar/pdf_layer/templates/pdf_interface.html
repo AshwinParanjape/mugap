@@ -1,0 +1,27 @@
+<!doctype html>
+{% load staticfiles %}
+
+<html lang="en">
+<head>
+<meta charset="utf-8">
+
+<title>Peerstand - {{title}} </title>
+<!--<meta name="description" content="The HTML5 Herald">
+<meta name="author" content="SitePoint">-->
+
+<script type="text/javascript" src="{% static "rangy/rangy-core.js"%}"></script>
+<script type="text/javascript" src="{% static "rangy/rangy-classapplier.js"%}"></script>
+<script type="text/javascript" src="{% static "rangy/rangy-highlighter.js"%}"></script>
+<link rel="stylesheet" href="{% static "css/frameset.css"%}">
+
+<!--[if lt IE 9]>
+			<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+			  <![endif]-->
+</head>
+
+<body>
+<body>
+<iframe id="pdf_viewer" src="/pdf_viewer?cluster_id={{cluster_id}}"></iframe>
+<iframe id="post_pane" name="post_pane" src="/p/list/{{cluster_id}}/"></iframe>
+</body>
+</html>

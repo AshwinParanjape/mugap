@@ -1,0 +1,41 @@
+{% load staticfiles %}
+<html>
+<head>
+<title>Search</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+<link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" type="text/css" href="{% static "css/pub_search_results.css"%}">
+</head>
+<body>
+<div class='container'>
+	<div class='row top-buffer'>
+		<div class='col-xs-12'>
+			<form class="peerstand-search-form" action="" method="get">
+				<div class="input-group">
+					<input type="text" name="q" class="form-control" placeholder="{{ query }}">
+					<span class="input-group-btn">
+						<button class="btn btn-default" type="submit">Go!</button>
+					</span>
+				</div>
+			</form>
+			<p>Found {{ articles|length }} article{{ articles|pluralize }}.</p>
+		</div>
+	</div>
+{% if articles %}
+	{% for article in articles %}
+	<div class='row'>
+		<div class='col-xs-12'>
+			<a href="/pdf/{{ article.cluster_id.0 }}"><h3>{{ article.title.0 }}  </h3></a>
+			<h4>{{ article.second_line.0|safe }} </h4>
+			<p>{{ article.excerpt.0|safe }}</p>
+		</div>
+
+	</div>
+	{% endfor %}
+</ul>
+{% else %}
+<p>No publications on google scholar matched your search criteria.</p>
+{% endif %}
+</div>
+</body>
+</html>

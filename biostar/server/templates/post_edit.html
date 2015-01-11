@@ -16,6 +16,32 @@
             {% crispy form %}
         </div>
     </div>
+	<script type="text/javascript">
+	var example_form = '.post-form';
+	$.ajax({
+		url: "{% url 'new-post' %}",
+		type: "POST",
+		data: $(example_form).serialize(),
+		success: function(data) {
+		if (data['success']) {
+		// Here we replace the form, for the
+			parent.window.frames['pdf_viewer'].refreshAnnotations();
+			parent.window.frames['post_pane'].location = data['url'];
+			alert('success');
+			//$(example_form).replaceWith(data['form_html']);
+		}
+		else {
+		// Here you can show the user a success message or do whatever you need
+			//$(example_form).find('.success-message').show();
+			//alert('failure');
+		}
+		},
+		error: function () {
+			//$(example_form).find('.error-message').show()
+			//alert('failure');
+		}
+	});
+	</script>
 
     {# Disable rich text editing for preformatted posts #}
     {%  if not pre %}

@@ -1,0 +1,21 @@
+<html>
+<head>
+<title>Search</title>
+</head>
+<body>
+<form action="" method="get">
+	<input type="text" name="q" value = "{{ query }}">
+	<input type="submit" value="Search">
+</form>
+{% if articles %}
+<p>Found {{ articles|length }} book{{ articles|pluralize }}.</p>
+<ul>
+	{% for article in articles %}
+	<li>{{ article.title }}</li>
+	{% endfor %}
+</ul>
+{% else %}
+<p>No books matched your search criteria.</p>
+{% endif %}
+</body>
+</html>

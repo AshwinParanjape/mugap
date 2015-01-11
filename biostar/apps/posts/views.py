@@ -1,13 +1,15 @@
 # Create your views here.
+from django.forms.models import model_to_dict
 from django.shortcuts import render_to_response
 from django.views.generic import TemplateView, DetailView, ListView, FormView, UpdateView
 from .models import Post
+from biostar.pdf_layer.models import Annotation, Publication
 from django import forms
 from django.core.urlresolvers import reverse
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Fieldset, Div, Submit, ButtonHolder
 from django.shortcuts import render
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib import messages
 from . import auth
 from braces.views import LoginRequiredMixin
@@ -20,6 +22,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 import logging
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -51,22 +54,24 @@ def valid_tag(text):
 
 
 class LongForm(forms.Form):
-    FIELDS = "title content post_type tag_val".split()
+    #FIELDS = "title content post_type tag_val".split()
+    FIELDS = "title content tag_val cluster annotated_text serialized_version page_num".split()
 
     POST_CHOICES = [(Post.QUESTION, "Question"),
-                    (Post.JOB, "Job Ad"),
-                    (Post.TUTORIAL, "Tutorial"), (Post.TOOL, "Tool"),
-                    (Post.FORUM, "Forum"), (Post.NEWS, "News"),
-                    (Post.BLOG, "Blog"), (Post.PAGE, "Page")]
+                    #(Post.JOB, "Job Ad"),
+                    #(Post.TUTORIAL, "Tutorial"), (Post.TOOL, "Tool"),
+                    #(Post.FORUM, "Forum"), (Post.NEWS, "News"),
+                    #(Post.BLOG, "Blog"), (Post.PAGE, "Page")]
+					]
 
     title = forms.CharField(
         label="Post Title",
         max_length=200, min_length=10, validators=[valid_title],
         help_text="Descriptive titles promote better answers.")
 
-    post_type = forms.ChoiceField(
-        label="Post Type",
-        choices=POST_CHOICES, help_text="Select a post type: Question, Forum, Job, Blog")
+    #post_type = forms.ChoiceField(
+        #label="Post Type",
+        #choices=POST_CHOICES, help_text="Select a post type: Question, Forum, Job, Blog")
 
     tag_val = forms.CharField(
         label="Post Tags",
@@ -77,6 +82,14 @@ class LongForm(forms.Form):
     content = forms.CharField(widget=forms.Textarea,
                               min_length=80, max_length=15000,
                               label="Enter your post below")
+
+    cluster = forms.CharField(widget=forms.HiddenInput)
+
+    annotated_text = forms.CharField(widget=forms.HiddenInput)
+
+    serialized_version = forms.CharField(widget=forms.HiddenInput)
+
+    page_num = forms.IntegerField(widget=forms.HiddenInput)
 
     def __init__(self, *args, **kwargs):
         super(LongForm, self).__init__(*args, **kwargs)
@@ -89,6 +102,10 @@ class LongForm(forms.Form):
                 Field('post_type'),
                 Field('tag_val'),
                 Field('content'),
+                Field('cluster'),
+                Field('annotated_text'),
+                Field('serialized_version'),
+                Field('page_num'),
             ),
             ButtonHolder(
                 Submit('submit', 'Submit')
@@ -179,7 +196,7 @@ class NewPost(LoginRequiredMixin, FormView):
         initial = dict()
 
         # Attempt to prefill from GET parameters
-        for key in "title tag_val content".split():
+        for key in "title tag_val content cluster annotated_text serialized_version page_num".split():
             value = request.GET.get(key)
             if value:
                 initial[key] = value
@@ -206,20 +223,42 @@ class NewPost(LoginRequiredMixin, FormView):
 
         title = data('title')
         content = data('content')
-        post_type = int(data('post_type'))
+        #post_type = int(data('post_type'))
         tag_val = data('tag_val')
+
 
         post = Post(
             title=title, content=content, tag_val=tag_val,
-            author=request.user, type=post_type,
+            author=request.user, type=Post.QUESTION
         )
+        print data('cluster')
+        print data('page_num')
+        print data('annotated_text')
+        print data('serialized_version')
+        pub = Publication.objects.get(cluster_id__exact = str(data('cluster')))
+        print model_to_dict(pub)
+        print model_to_dict(post)
         post.save()
+        annotation = Annotation(
+            cluster= pub,
+            page_num=int(data('page_num')),
+            post = post,
+            annotated_text = data('annotated_text'),
+            serialized_version = data('serialized_version')
+        )
+        annotation.save()
+        
 
         # Triggers a new post save.
         post.add_tags(post.tag_val)
 
         messages.success(request, "%s created" % post.get_type_display())
+        #return HttpResponse("<script> parent.window.frames['pdf_viewer'].refreshAnnotations() </script>", mimetype="text/javascript")
+        json_response_data = {'success': True, 'post_url': post.get_absolute_url()}
+	#return HttpResponse(json.dumps(json_response_data), content_type="application/json")
         return HttpResponseRedirect(post.get_absolute_url())
+        #return HttpResponseRedirect(pub.get_peerstand_url())
+
 
 
 class NewAnswer(LoginRequiredMixin, FormView):

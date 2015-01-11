@@ -7,14 +7,28 @@ admin.autodiscover()
 
 from django.views.generic import TemplateView
 from biostar.server import views, ajax, search, moderate, api, orcid
+from biostar.pdf_layer import views as pdf_views
 from biostar.apps.posts.views import NewAnswer, NewPost, EditPost, external_post_handler
 from biostar.apps.users.views import external_logout, external_login, CaptchaView, DigestManager, unsubscribe
 from biostar.apps.planet.views import BlogPostList
 
 urlpatterns = patterns('',
 
+    #landing page
+    url(r'^$', pdf_views.pub_search, name="landing-page"),
+
+    # Pdf interface
+    url(r'^pdf/(?P<cluster_id>.+)/$',pdf_views.pdf_interface),
+    url(r'^pdf_viewer$',pdf_views.pdf_viewer),
+
+	# annotations json for a pdf
+    url(r'^p/pdf/(?P<cluster_id>.+)/$',pdf_views.get_annotations, name="pdf_annotations"),
+
     # Post listing.
-    url(r'^$', views.PostList.as_view(), name="home"),
+    url(r'^p/list/$', views.PostList.as_view(), name="home"),
+
+    # Post listing for document.
+    url(r'^p/list/(?P<cluster_id>.+)/$', pdf_views.DocumentPostList.as_view(), name="doc_home"),
 
     # Listing of all tags.
     url(r'^t/$', views.TagList.as_view(), name="tag-list"),
@@ -153,6 +167,13 @@ urlpatterns += patterns('',
 )
 
 # This is used only for the debug toolbar
+if settings.DEBUG:
+	urlpatterns += patterns(
+			'django.views.static',
+			(r'media/(?P<path>.*)',
+				'serve',
+				{'document_root': settings.MEDIA_ROOT}), )
+
 if settings.DEBUG:
     import debug_toolbar
     from biostar.apps.users.views import test_login

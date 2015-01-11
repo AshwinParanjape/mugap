@@ -23,12 +23,12 @@ START_CATEGORIES = [
 
 # These should be the most frequent (or special) tags on the site.
 NAVBAR_TAGS = [
-    "RNA-Seq", "ChIP-Seq", "SNP", "Assembly",
+#    "RNA-Seq", "ChIP-Seq", "SNP", "Assembly",
 ]
 
 # The last categories. These tags have special meaning internally.
 END_CATEGORIES = [
-    "Tutorials", "Tools",  "Jobs", "Forum",
+#    "Tutorials", "Tools",  "Jobs", "Forum",
 ]
 
 # These are the tags that always show up in the tag recommendation dropdown.
@@ -65,7 +65,8 @@ INTERNAL_IPS = ('127.0.0.1', )
 HOME_DIR = get_env("BIOSTAR_HOME")
 LIVE_DIR = abspath(HOME_DIR, 'live')
 
-DATABASE_NAME = abspath(LIVE_DIR, get_env("DATABASE_NAME"))
+#DATABASE_NAME = abspath(LIVE_DIR, get_env("DATABASE_NAME"))
+DATABASE_NAME = get_env("DATABASE_NAME")
 STATIC_DIR = abspath(HOME_DIR, 'biostar', 'static')
 TEMPLATE_DIR = abspath(HOME_DIR, 'biostar', 'server', 'templates')
 
@@ -101,16 +102,17 @@ ADMINS = (
 # Get the secret key from the environment.
 SECRET_KEY = get_env("SECRET_KEY")
 
+
 MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
         # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'ENGINE': 'django.db.backends.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': DATABASE_NAME,
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',
+        'USER': 'django_app',
+        'PASSWORD': 'ironfist',
+        'HOST': 'localhost',
         'PORT': '',
     }
 }
@@ -188,6 +190,7 @@ MEDIA_URL = '/static/upload/'
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
 STATIC_URL = '/static/'
+PDFJS_URL = STATIC_URL+'pdfjs/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
@@ -275,6 +278,9 @@ INSTALLED_APPS = [
 
     # The main Biostar server.
     'biostar.server',
+
+    # pdf layer over the underlying biostar framework
+    'biostar.pdf_layer',
 
     # Social login handlers.
     'allauth',

@@ -1,0 +1,23 @@
+div.container-centered{
+	position: relative;
+}
+
+div.container{
+	min-height: 10em;
+	display: table-cell;
+	vertical-align: middle;
+	width:100%;
+	height:100;
+}
+
+.peerstand-logo{
+	text-align:center;
+	margin-left: auto;
+	margin-right: auto;
+	width: 6em
+}
+
+body{
+	width:100%;
+	height:100%;
+}

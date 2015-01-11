@@ -87,8 +87,11 @@ class LatestFeed(PostBase):
 
 class PostTypeFeed(PostBase):
     TYPE_MAP = {
-        'job': Post.JOB, 'blog': Post.BLOG, 'question': Post.QUESTION,
-        'forum': Post.FORUM, 'page': Post.PAGE
+        #'job': Post.JOB, 
+		#'blog': Post.BLOG, 
+		'question': Post.QUESTION,
+        #'forum': Post.FORUM, 
+		#'page': Post.PAGE
     }
 
     def get_object(self, request, text):
