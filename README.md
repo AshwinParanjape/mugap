@@ -1,6 +1,6 @@
 
 
-MuGap: Q&A for Scientific Publications
+mugap: Q&A for Scientific Publications
 =====================================================
 MuGap is a platform to share questions and explainations in the context of scientific publications to enhance collective understanding. 
 
