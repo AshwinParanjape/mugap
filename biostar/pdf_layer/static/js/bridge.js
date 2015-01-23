@@ -62,7 +62,7 @@ function newPost(containerNum){
 		path = '/p/new/post?cluster='+cluster_id+'&annotated_text='+context+'&serialized_version='+highlighterTemp.serialize()+'&page_num='+containerNum;
 		parent.window.frames['post_pane'].location = path;
 	}else{
-		if(parent.window.frames['post_pane'].location.pathname != doc_posts){
+		if(parent.window.frames['post_pane'].location != doc_posts){
 		parent.window.frames['post_pane'].location = doc_posts;
 		}
 	}
