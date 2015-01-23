@@ -2,7 +2,7 @@ var pages_loaded = [];
 var highlighter;
 var initialDoc;
 var path = '';
-var doc_posts = '/p/list/'+cluster_id;
+var doc_posts = '/p/list/'+cluster_id+'/';
 function retrieveAnnotations(){
 	var xmlhttp=new XMLHttpRequest();
 	xmlhttp.open("GET","p/pdf/"+cluster_id+"/",true);
