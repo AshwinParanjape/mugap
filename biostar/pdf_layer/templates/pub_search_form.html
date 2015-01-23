@@ -1,21 +1,22 @@
 {% load staticfiles %}
 <html>
 <head>
-<title>Search</title>
+<meta name="description" content="Q&A for Scientific Articles">
+<title>mugap - Search</title>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
-<link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" type="text/css" href="{% static "css/pub_search_form.css"%}">
 </head>
 <body>
 <div class='container'>
 	<div class='container-centered'>
-		<h1 class='peerstand-logo'><span class="logo-peer">peer</span><span class='logo-stand'>stand</span></h1>
+		{% include SITE_LOGO %}
+		<h4 class='text-center'>Q&amp;A for scientific articles</h4>
 		{% if error %}
 		<p style="color: red;">Please submit a search term.</p>
 		{% endif %}
-		<form class="peerstand-search-form" action="" method="get">
+		<form class="mugap-search-form" action="" method="get">
 		<div class="input-group">
-			<input type="text" name="q" class="form-control" placeholder="Search for...">
+			<input type="text" name="q" class="form-control" placeholder="Search for any publication, author, conference, abstract...">
 			<span class="input-group-btn">
 				<button class="btn btn-default" type="submit">Go!</button>
 			</span>
