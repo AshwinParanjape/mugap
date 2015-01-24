@@ -5,7 +5,7 @@ import urllib
 from django.core.files import File
 import os
 import json
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.forms.models import model_to_dict
 from django.core import serializers
 from biostar.server import views
@@ -41,7 +41,6 @@ class DocumentPostList(views.PostList):
 		return query
 
 
-# Create your views here.
 def get_annotations(request, cluster_id):
 	#json_response_data = serializers.serialize('json',Annotation.objects.filter(cluster=cluster_id))
 	json_response_data = [ob.json_for_pdf() for ob in Annotation.objects.filter(cluster=cluster_id)]
@@ -51,8 +50,19 @@ def pdf_viewer(request):
 	if 'cluster_id' in request.GET:
 		get_dict = request.GET.copy()
 		get_dict.update({'file':'media/pdf/'+request.GET['cluster_id']+'.pdf'})
+                cluster_id = request.GET['cluster_id']
+		p = Publication.objects.get(cluster_id = cluster_id)
+                url =  p.url_pdf
+		get_dict.update({'file':url})
 		request.GET= get_dict
-		return render(request, "pdf_viewer.html", {'cluster_id':request.GET['cluster_id']})
+                return render(request, "pdf_viewer.html", {'cluster_id':request.GET['cluster_id'], 'url': url})
+
+def pdf_file(request,cluster_id):
+	#cluster_id = request.GET['cluster_id']
+	p = Publication.objects.get(cluster_id = cluster_id)
+	url =  p.url_pdf
+        print url
+	return HttpResponseRedirect(url)
 
 def pdf_interface(request, cluster_id):
 	if cluster_id:
@@ -64,7 +74,7 @@ def pdf_interface(request, cluster_id):
 			f1 = File(f)
 			p.pdf_file.save(p.cluster_id+'.pdf', f1)
 			print p.pdf_file.name
-			p.save()
+                        p.save()
 		else: 
 			print p.title, p.url_pdf
         get_dict = request.GET.copy()
@@ -86,6 +96,7 @@ def pub_search(request):
 			querier = ScholarQuerier()
 			querier.send_query(query)
 			
+                        validated_articles = []
 			for article_1 in querier.articles:
 				article = article_1.attrs
 				if article['url_pdf'][0] is not None:
@@ -105,11 +116,15 @@ def pub_search(request):
 					print p.title
 					print p.url_pdf
                                         print p.second_line
-					p.save()
+                                        try:
+					    p.save()
+                                            validated_articles.append(article_1);
+                                        except:
+                                            pass
 
 			print([(e.cluster_id, e.title, e.url_pdf) for e in Publication.objects.all()])
                         #TODO:Save data
-			return render(request, 'pub_search_results.html', {'articles': [article.attrs for article in querier.articles], 'query': q})
+			return render(request, 'pub_search_results.html', {'articles': [article.attrs for article in validated_articles], 'query': q})
 	return render(request, 'pub_search_form.html', {'error': error})
 
 
